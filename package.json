@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "emulator": "firebase emulators:start --only auth,firestore --import test-data --export-on-exit"
   },
   "prettier": {
     "printWidth": 100,
@@ -31,6 +32,8 @@
     "@angular/material": "~21.1.4",
     "@angular/platform-browser": "^21.1.0",
     "@angular/router": "^21.1.0",
+    "firebase": "^11.10.0",
+    "rxfire": "^6.1.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
