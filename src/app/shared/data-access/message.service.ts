@@ -7,6 +7,7 @@ import { connect } from 'ngxtension/connect';
 
 import { Message } from '../interfaces/message';
 import { FIRESTORE } from '../../app.config';
+import { AuthService } from './auth.service';
 
 interface MessageState {
   messages: Message[];
@@ -18,6 +19,7 @@ interface MessageState {
 })
 export class MessageService {
   private firestore = inject(FIRESTORE);
+  private authService = inject(AuthService);
 
   // sources
   messages$ = this.getMessages();
@@ -49,7 +51,7 @@ export class MessageService {
 
   private addMessage(message: string) {
     const newMessage: Message = {
-      author: 'me@test.com',
+      author: this.authService.user()?.email || 'unknown',
       content: message,
       created: Date.now().toString(),
     };
