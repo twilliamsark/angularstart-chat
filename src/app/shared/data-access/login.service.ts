@@ -1,28 +1,29 @@
-import { Credentials } from './../interfaces/credentials';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { EMPTY, merge, Subject } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
+import { Credentials } from './../interfaces/credentials';
 import { connect } from 'ngxtension/connect';
 
-export type RegisterStatus = 'pending' | 'creating' | 'success' | 'error';
+export type LoginStatus = 'pending' | 'authenticating' | 'success' | 'error';
 
-interface RegisterState {
-  status: RegisterStatus;
+interface LoginState {
+  status: LoginStatus;
 }
 
 @Injectable()
-export class RegisterService {
+export class LoginService {
   private authService = inject(AuthService);
 
   // sources
   error$ = new Subject<any>();
-  createUser$ = new Subject<Credentials>();
-  userCreated$ = this.createUser$.pipe(
+  loginUser$ = new Subject<Credentials>();
+  userLoggedIn$ = this.loginUser$.pipe(
     switchMap((credentials) =>
-      this.authService.createAccount(credentials).pipe(
+      this.authService.login(credentials).pipe(
         catchError((err) => {
           this.error$.next(err);
+          console.log('ERROR', err);
           return EMPTY;
         }),
       ),
@@ -30,7 +31,7 @@ export class RegisterService {
   );
 
   // state
-  private state = signal<RegisterState>({
+  private state = signal<LoginState>({
     status: 'pending',
   });
 
@@ -39,8 +40,8 @@ export class RegisterService {
 
   constructor() {
     const nextState$ = merge(
-      this.userCreated$.pipe(map(() => ({ status: 'success' as const }))),
-      this.createUser$.pipe(map(() => ({ status: 'creating' as const }))),
+      this.userLoggedIn$.pipe(map(() => ({ status: 'success' as const }))),
+      this.loginUser$.pipe(map(() => ({ status: 'authenticating' as const }))),
       this.error$.pipe(map(() => ({ status: 'error' as const }))),
     );
 

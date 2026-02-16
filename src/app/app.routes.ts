@@ -6,8 +6,8 @@ export const routes: Routes = [
     loadComponent: () => import('./home/home'),
   },
   {
-    path: 'register',
-    loadComponent: () => import('./auth/register/register'),
+    path: 'auth',
+    loadChildren: () => import('./auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
   {
     path: '',
