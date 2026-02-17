@@ -29,6 +29,30 @@ import { MatButtonModule } from '@angular/material/button';
       <app-message-input (message)="messageService.add$.next($event)" />
     </div>
   `,
+  styles: [
+    `
+      .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+      }
+
+      mat-toolbar {
+        box-shadow: 0px -7px 11px 0px var(--accent-color);
+      }
+
+      app-message-list {
+        height: 100%;
+        width: 100%;
+      }
+
+      app-message-input {
+        position: fixed;
+        bottom: 0;
+      }
+    `,
+  ],
 })
 export default class HomeComponent {
   messageService = inject(MessageService);
