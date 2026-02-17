@@ -11,11 +11,15 @@ import { AuthService } from '../../shared/data-access/auth.service';
   providers: [LoginService],
   template: `
     <div class="container gradient-bg">
-      <app-login-form
-        [status]="loginService.status()"
-        (login)="loginService.loginUser$.next($event)"
-      />
-      <a routerLink="/auth/register">Create account</a>
+      @if (authService.user() === null) {
+        <app-login-form
+          [status]="loginService.status()"
+          (login)="loginService.loginUser$.next($event)"
+        />
+        <a routerLink="/auth/register">Create account</a>
+      } @else {
+        <mat-spinner diameter="50" />
+      }
     </div>
   `,
   styles: [
