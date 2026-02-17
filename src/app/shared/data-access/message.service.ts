@@ -2,8 +2,9 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, Subject, defer, merge, of } from 'rxjs';
 import { collection, query, orderBy, limit, addDoc } from 'firebase/firestore';
 import { collectionData } from 'rxfire/firestore';
-import { catchError, exhaustMap, ignoreElements, map } from 'rxjs/operators';
+import { catchError, exhaustMap, filter, ignoreElements, map, retry } from 'rxjs/operators';
 import { connect } from 'ngxtension/connect';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 import { Message } from '../interfaces/message';
 import { FIRESTORE } from '../../app.config';
@@ -21,8 +22,15 @@ export class MessageService {
   private firestore = inject(FIRESTORE);
   private authService = inject(AuthService);
 
+  private authUser$ = toObservable(this.authService.user);
+
   // sources
-  messages$ = this.getMessages();
+  messages$ = this.getMessages().pipe(
+    // restart stream wihe user reauthenticates
+    retry({
+      delay: () => this.authUser$.pipe(filter((user) => !!user)),
+    }),
+  );
   add$ = new Subject<Message['content']>();
 
   // state
